@@ -1,0 +1,96 @@
+From ccdc25de174cf89c79500430f1da47f03ec71892 Mon Sep 17 00:00:00 2001
+From: Thomas Kopp <thomas.kopp@microchip.com>
+Date: Wed, 30 Nov 2022 15:46:50 +0100
+Subject: [linux][PATCH] Add MCP251XFD
+
+---
+ arch/arm/boot/dts/at91-sama5d27_wlsom1_ek.dts | 59 +++++++++++++++++++
+ 1 file changed, 59 insertions(+)
+
+diff --git a/arch/arm/boot/dts/at91-sama5d27_wlsom1_ek.dts b/arch/arm/boot/dts/at91-sama5d27_wlsom1_ek.dts
+index c145c4e5ef582..70a44ccec70a5 100644
+--- a/arch/arm/boot/dts/at91-sama5d27_wlsom1_ek.dts
++++ b/arch/arm/boot/dts/at91-sama5d27_wlsom1_ek.dts
+@@ -100,6 +100,41 @@ &macb0 {
+ 	status = "okay";
+ };
+ 
++
++&spi1 {
++		compatible = "atmel,at91rm9200-spi";
++		#address-cells = <1>;
++		#size-cells = <0>;
++		clock-names = "spi_clk";
++		atmel,fifo-size = <16>;
++		status = "okay";
++		pinctrl-names = "default";
++        pinctrl-0 = <&pinctrl_spi1_default &pinctrl_mikrobus1_spi_cs>;
++					
++		mcp2517fd@0 {
++			compatible = "microchip,mcp2517fd";
++			spi-max-frequency = <20000000>;
++			reg = <0>;
++
++			interrupt-parent = <&pioA>;
++			interrupts = <PIN_PB3 IRQ_TYPE_LEVEL_LOW>;
++
++			pinctrl-names = "default";
++			pinctrl-0 = <&pinctrl_mikrobus2_int>;
++						
++			gpio-controller;
++
++			clocks = <&mikrobus1_osc>;
++
++			mikrobus1_osc: oscillator {
++				compatible = "fixed-clock";
++				#clock-cells = <0>;
++				clock-frequency = <40000000>;
++			};
++		};
++};
++
++
+ &pioA {
+ 	/*
+ 	 * There is no real pinmux for ADC, if the pin
+@@ -127,6 +162,7 @@ pinctrl_key_gpio_default: key_gpio_default {
+ 		bias-pull-up;
+ 	};
+ 
++
+ 	pinctrl_led_gpio_default: led_gpio_default {
+ 		pinmux = <PIN_PA6__GPIO>,
+ 			 <PIN_PA7__GPIO>,
+@@ -180,6 +216,29 @@ pinctrl_usba_vbus: usba_vbus {
+ 		pinmux = <PIN_PA16__GPIO>;
+ 		bias-disable;
+ 	};
++	
++	pinctrl_mikrobus1_spi_cs: mikrobus1_spi_cs {
++		pinmux = <PIN_PC5__SPI1_NPCS1>;
++		bias-disable;
++	};
++
++	pinctrl_mikrobus2_spi_cs: mikrobus2_spi_cs {
++		pinmux = <PIN_PC4__SPI1_NPCS0>;
++		bias-disable;
++	};
++
++	pinctrl_spi1_default: spi1_default {
++		pinmux = <PIN_PC1__SPI1_SPCK>,
++			 <PIN_PC2__SPI1_MOSI>,
++			 <PIN_PC3__SPI1_MISO>,
++			 <PIN_PC4__SPI1_NPCS0>;
++		bias-disable;
++	};
++	
++	pinctrl_mikrobus2_int: mikrobus2_int {
++		pinmux = <PIN_PB3__GPIO>;
++		bias-disable;
++	};
+ };
+ 
+ &pwm0 {
+-- 
+2.34.1
+
