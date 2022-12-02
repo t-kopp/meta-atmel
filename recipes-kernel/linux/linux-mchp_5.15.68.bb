@@ -6,7 +6,8 @@ PV = "5.15+git${SRCPV}"
 KBRANCH = "linux-5.15-mchp"
 SRC_URI = "git://github.com/linux4microchip/linux.git;protocol=https;branch=${KBRANCH}"
 SRC_URI:append:sam9x60 = " file://defconfig"
-SRC_URI:append:sama5 = " file://defconfig"
+SRC_URI:append:sama5 = " file://defconfig\
+			 file://0002-Add-MCP251XFD.patch"
 SRC_URI:append:sama5d27-som1-ek-optee-sd = " file://sama5-linux-optee.cfg \
                                              file://0001-dts-include-optee-dtsi.patch \
                                              "
